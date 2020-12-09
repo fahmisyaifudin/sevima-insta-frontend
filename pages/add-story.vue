@@ -6,32 +6,30 @@
                 <header class="profile-form__header">
                     <div class="profile-form__avatar-container">
                         <img 
-                            src="images/avatar.jpg"
+                            src="images/avatar.png"
                             class="profile-form__avatar"
                         />
                     </div>
-                    <h4 class="profile-form__title">serranoarevalo</h4>
+                    <h4 class="profile-form__title">{{ cookies.username }}</h4>
                 </header>
-                <form action="#" class="edit-profile__form">
-                    
-                   
+                <form class="edit-profile__form">
                     
                     <div class="edit-profile__form-row">
                         <label for="bio" class="edit-profile__label">
-                            Bio
+                            Caption
                         </label>
-                        <textarea id="bio" class="edit-profile__textarea"></textarea>
+                        <textarea id="bio" v-model="input.caption" class="edit-profile__textarea"></textarea>
                     </div>
                     <div class="edit-profile__form-row">
                         <label for="photo" class="edit-profile__label">
                             Photo
                         </label>
-                        <textarea id="bio" class="edit-profile__textarea"></textarea>
+                        <input type="file" @change="previewFile" class="form-control-file">
                     </div>
                     
                     <div class="edit-profile__form-row">
                         <label class="edit-profile__label"></label>
-                        <input type="submit" value="Submit">
+                        <input @click="createStory()" type="button" value="Submit">
                     </div>
                 </form>
             </section>
@@ -44,5 +42,36 @@ import MyNavigation from "@@/components/Navigation"
 
 export default {
     components: { MyNavigation },
+    middleware: 'auth',
+    data(){
+        return {
+            input: {}
+        }
+    },
+    computed: {
+            cookies(){
+                return this.$cookies.get('nuxt_session')
+            }
+    },
+    methods: {
+         previewFile(event){
+            this.input.photo = event.target.files[0]
+        },
+        async createStory(){
+            try {
+                let input = new FormData();
+                input.append('photo', this.input.photo);
+                input.append('user_id', this.cookies.id);
+                input.append('caption', this.input.caption);
+
+                const story = await this.$axios.$post('/story', input);
+                if (story.status == 200) {
+                    this.$router.push('/')
+                }
+            } catch (err) {
+                alert(err)
+            }
+        }
+    }
 }
 </script>

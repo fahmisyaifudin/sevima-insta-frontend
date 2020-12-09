@@ -7,18 +7,17 @@
                     <div class="photo__header-column">
                         <img
                             class="photo__avatar"
-                            src="images/avatar.jpg"
+                            src="@/static/images/avatar.png"
                         />
                     </div>
                     <div class="photo__header-column">
-                        <span class="photo__username">serranoarevalo</span>
-                        <span class="photo__location">European Art of Living Center - Bad Antogast</span>
+                        <span class="photo__username">{{ story.user.username }}</span>
                     </div>
                 </header>
                 <div class="photo__file-container">
                     <img
                         class="photo__file"
-                        src="images/feedPhoto.jpg"
+                        :src="$baseURL + story.photo"
                     />
                 </div>
                 <div class="photo__info">
@@ -30,13 +29,13 @@
                             <i class="far fa-comment fa-lg"></i>
                         </span>
                     </div>
-                    <span class="photo__likes">35 likes</span>
+                    <span class="photo__likes">{{ story.like.length }} likes</span>
                     <ul class="photo__comments">
                         <li class="photo__comment">
-                            <span class="photo__comment-author">serranoarevalo</span>wow this is great!
+                            <span class="photo__comment-author">{{ story.user.username }}</span>{{ story.caption }}
                         </li>
-                        <li class="photo__comment">
-                            <span class="photo__comment-author">lynn</span>no is not!
+                        <li class="photo__comment" v-for="komentar in comment" :key="komentar.id">
+                            <span class="photo__comment-author">{{ komentar.user.username }}</span>{{ komentar.caption }}!
                         </li>
                     </ul>
                     <span class="photo__time-ago">11 hours ago</span>
@@ -55,5 +54,36 @@ import MyNavigation from "@@/components/Navigation"
 
 export default {
     components: { MyNavigation },
+    computed: {
+        postId(){
+          return this.$route.params.id
+        },
+        cookies(){
+            return this.$cookies.get('nuxt_session')
+        }
+    },
+    data(){
+        return {
+            story: {
+                like: 0,
+                user: {},
+                comment: []
+            }
+        }
+    },
+    mounted(){
+        this.getDetail();
+    },
+    methods: {
+         async getDetail(){
+           try{
+               const timeline = await this.$axios.post('/story-detail', { user_id: this.cookies.id, post_id: this.postId })
+               this.story = timeline.data.data;
+           }catch(err){
+               alert(err);
+           }
+           
+       }
+    }
 }
 </script>

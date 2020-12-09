@@ -3,7 +3,7 @@
         <nav class="navigation">
             <nuxt-link to="/">
                 <img 
-                    src="images/navLogo.png"
+                    src="@/static/images/navLogo.png"
                     alt="logo"
                     title="logo"
                     class="navigation__logo"

@@ -18,7 +18,7 @@
                         class="login__logo"
                     />
                     <!-- x   -->
-                    <form class="login__form">
+                    <form method="post" class="login__form">
                         <div class="login__input-container">
                             <input 
                                 type="text"
@@ -27,6 +27,16 @@
                                 placeholder="Username"
                                 required
                                 class="login__input"
+                            />
+                        </div>
+                         <div class="login__input-container">
+                            <input 
+                                type="text"
+                                name="full_name"
+                                v-model="input.name"
+                                placeholder="Full Name"
+                                required
+                                class="login__input" 
                             />
                         </div>
                         <div class="login__input-container">
@@ -39,21 +49,23 @@
                                 class="login__input" 
                             />
                         </div>
+                        
                         <div class="login__input-container">
                             <input
-                                @click="login()"
+                                @click="register()" 
                                 type="button"
-                                value="Log in"
+                                value="Register"
                                 class="login__input login__input--btn"
                             />
                         </div>
+                        
                     </form>
                 </div>
                 <div class="login__section login__sign-up">
                     <span class="login__text">
-                        Don't have an account? 
-                        <nuxt-link to="/register"><a class="login__link">
-                            Sign up
+                        Have an account? 
+                        <nuxt-link to="/login"><a class="login__link">
+                            Login
                         </a></nuxt-link>
                     </span>
                 </div>
@@ -72,17 +84,12 @@ export default {
        }
    },
    methods: {
-      async login(){
+       async register(){
            event.preventDefault();
            try {
-                const login = await this.$axios.post('/login', this.input)
-                console.log(login.status)
-                if (login.status == 200) {
-                     this.$cookies.set('nuxt_session', login.data.data, {
-                        path: '/',
-                        maxAge: 60 * 60 * 24 * 7
-                    })
-                    this.$router.push('/')
+                const register = await this.$axios.post('/register', this.input)
+                if (register.status == 200) {
+                        this.$router.push('/login')
                 }   
            }catch(err){
                 alert(err)
