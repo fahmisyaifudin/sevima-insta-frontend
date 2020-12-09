@@ -2,7 +2,7 @@
   <div>
         <MyNavigation />
         <main class="feed">
-            <section class="photo" v-for="story in stories" :key="story.id">
+            <section class="photo" v-for="(story, index) in stories" :key="story.id">
                 <header class="photo__header">
                     <div class="photo__header-column">
                         <img
@@ -23,7 +23,7 @@
                 <div class="photo__info">
                     <div class="photo__icons">
                         <span class="photo__icon">
-                            <i class="far fa-heart fa-lg"></i>
+                            <i @click="actionLike(story.id, index)" :class="story.isLiked ? 'fas' : 'far'" class="fa-heart fa-lg"></i>
                         </span>
                         <span class="photo__icon">
                             <nuxt-link :to="{ path: 'detail/' + story.id, params: { detail: story }}"><i class="far fa-comment fa-lg"></i></nuxt-link>
@@ -56,7 +56,7 @@ export default {
     },
     data(){
        return {
-           stories: null,
+           stories: [],
        }
    },
    created(){
@@ -74,6 +74,17 @@ export default {
        },
        getTimeFromNow(date){
            return moment(date).fromNow();
+       },
+       async actionLike(id, index){
+           if (!this.stories[index].isLiked) {
+                const timeline = await this.$axios.post('/like', { post_id: id, user_id: this.cookies.id, status: true });
+                this.stories[index].like.push({ post_id: id, user_id: this.cookies.id });
+                this.stories[index].isLiked = true;   
+           }else{
+               const timeline = await this.$axios.post('/like', { post_id: id, user_id: this.cookies.id, status: false });
+                this.stories[index].like.pop();
+                this.stories[index].isLiked = false;  
+           }
        }
    }
        
